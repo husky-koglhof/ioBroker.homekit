@@ -30,7 +30,6 @@
     "linux"
   ],
   "scripts": {
-    "install": "apt-get install libudev-dev"
   },
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.zwave/issues"
