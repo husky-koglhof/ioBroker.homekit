@@ -11,7 +11,7 @@ Within Admin Settings you can set following Attributes
 - port
 - pincode
 
-![admin-settings](img/admin-settings.png)
+![admin-settings](img/admin_settings.png)
 
 ## Installation
 For Usage you must define a enum named enum.homekit.
