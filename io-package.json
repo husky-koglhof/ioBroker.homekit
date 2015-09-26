@@ -1,0 +1,35 @@
+{
+    "common": {
+        "name":                     "homekit",
+        "title":                    "homekit",
+        "desc":                     "Apple HomeKit based on HAP-NodeJS",
+        "version":                  "0.0.1",
+        "mode":                     "daemon",
+        "platform":                 "javascript/Node.js",
+        "os":                       ["darwin", "linux"],
+        "loglevel":                 "debug",
+        "keywords":                 ["ioBroker", "homekit", "Siri", "home automation"],
+        "main":                     "main.js",
+        "authors": [
+            "Christian Baumgartner", "husky-koglhof <husky.koglhof@icloud.com>"
+        ],
+        "license":                  "CC BY-NC-SA",
+        "singletonHost":            true,
+        "readme":                   "https://github.com/husky-koglof/ioBroker.homekit/blob/master/README.md",
+        "icon":                     "homekit.png",
+        "extIcon":                  "https://raw.githubusercontent.com/husky-koglhof/ioBroker.homekit/master/admin/homekit.png",
+        "install":                  true,
+        "singleton":                true,
+        "messagebox":               true
+    },
+    "native": {
+        "username": "CC:22:3D:E3:CE:F6",
+        "port": 51826,
+        "pincode": "031-45-154",
+        "category": "Accessory.Categories.OTHER"
+    },
+    "objects": [
+    ],
+    "instanceObjects": [
+    ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "ioBroker.homekit",
+  "description": "Apple HomeKit based on HAP-NodeJS",
+  "version": "0.0.1",
+  "author": {
+    "name": "versteckt",
+    "email": "husky.koglhof@icloud.com"
+  },
+  "homepage": "https://github.com/husky-koglhof/ioBroker.homekit",
+  "license": "CC BY-NC-SA",
+  "keywords": [
+    "ioBroker",
+    "homekit",
+    "Siri",
+    "home automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/husky-koglhof/ioBroker.homekit"
+  },
+  "dependencies": {
+    "HAP-NodeJS": "git://github.com/hobbyquaker/HAP-NodeJS",
+    "yalm": "^2.0.0",
+    "yargs": "^3.25.0"
+  },
+  "devDependencies": {
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "scripts": {
+    "install": "apt-get install libudev-dev"
+  },
+  "bugs": {
+    "url": "https://github.com/ioBroker/ioBroker.zwave/issues"
+  },
+  "main": "main.js",
+  "readmeFilename": "README.md"
+}
