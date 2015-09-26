@@ -26,7 +26,9 @@
         "username": "CC:22:3D:E3:CE:F6",
         "port": 51826,
         "pincode": "031-45-154",
-        "category": "Accessory.Categories.OTHER"
+        "category": "Accessory.Categories.OTHER",
+        "TemperatureSensor": "HM-CC-TC,HM-CC-RT-DN,BC-RT-TRX-CyG-3",
+        "Lightbulb": "HM-LC-Sw1-FM,HM-LC-Sw2-FM,HM-LC-Sw4-DR"
     },
     "objects": [
     ],
