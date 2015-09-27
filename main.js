@@ -279,33 +279,33 @@ var createAccessory = {
         if (settings.topic.statusLock) {
 
             adapter.log.info('> iobroker subscribe ' + settings.topic.statusLock);
-/* TODO:
-            mqttSub(settings.topic.statusLock, function (val) {
+            /* TODO:
+             mqttSub(settings.topic.statusLock, function (val) {
 
-                if (val === settings.payload.lockSecured) {
-                    lock.getService(Service.LockMechanism)
-                        .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
-                }
-                if (val === settings.payload.lockUnsecured) {
-                    lock.getService(Service.LockMechanism)
-                        .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
-                }
-            });
+             if (val === settings.payload.lockSecured) {
+             lock.getService(Service.LockMechanism)
+             .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
+             }
+             if (val === settings.payload.lockUnsecured) {
+             lock.getService(Service.LockMechanism)
+             .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
+             }
+             });
 
-            lock.getService(Service.LockMechanism)
-                .getCharacteristic(Characteristic.LockCurrentState)
-                .on('get', function(callback) {
-                    adapter.log.info('< hap ' + settings.name + ' get LockCurrentState');
+             lock.getService(Service.LockMechanism)
+             .getCharacteristic(Characteristic.LockCurrentState)
+             .on('get', function(callback) {
+             adapter.log.info('< hap ' + settings.name + ' get LockCurrentState');
 
-                    if (mqttStatus[settings.topic.statusLock] === settings.payload.lockSecured) {
-                        adapter.log.info('> hap ' + settings.name + ' LockCurrentState.SECURED');
-                        callback(null, Characteristic.LockCurrentState.SECURED);
-                    } else {
-                        adapter.log.info('> hap ' + settings.name + ' LockCurrentState.UNSECURED');
-                        callback(null, Characteristic.LockCurrentState.UNSECURED);
-                    }
-                });
-*/
+             if (mqttStatus[settings.topic.statusLock] === settings.payload.lockSecured) {
+             adapter.log.info('> hap ' + settings.name + ' LockCurrentState.SECURED');
+             callback(null, Characteristic.LockCurrentState.SECURED);
+             } else {
+             adapter.log.info('> hap ' + settings.name + ' LockCurrentState.UNSECURED');
+             callback(null, Characteristic.LockCurrentState.UNSECURED);
+             }
+             });
+             */
         }
 
         return lock;
@@ -323,7 +323,12 @@ var createAccessory = {
             .getCharacteristic(Characteristic.CurrentTemperature)
             .on('get', function(callback) {
                 adapter.log.info('< hap ' + settings.name + ' get TemperatureSensor CurrentTemperature');
-                callback(null, states[settings.topic.statusTemperature].val);
+
+                adapter.getForeignState(settings.topic.statusTemperature, function (err, state) {
+                    if (err || !state) {
+                    }
+                    if (callback) callback(null, state.val);
+                });
             });
 
         return sensor;
@@ -352,10 +357,16 @@ var createAccessory = {
             .getCharacteristic(Characteristic.On)
             .on('get', function (callback) {
                 adapter.log.info('< hap ' + settings.name + ' get On');
-                // TODO: reload States
-                var on = states[settings.topic.statusOn].val === settings.payload.onTrue;
-                adapter.log.info('> hap ' + settings.name + " " + on);
-                callback(null, on);
+                //var on = states[settings.topic.statusOn].val === settings.payload.onTrue;
+                //adapter.log.info('> hap ' + settings.name + " " + on);
+                //callback(null, on);
+
+                adapter.getForeignState(settings.topic.statusOn, function (err, state) {
+                    if (err || !state) {
+                    }
+                    if (callback) callback(null, state.val);
+                });
+
             });
 
 

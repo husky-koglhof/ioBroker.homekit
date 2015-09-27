@@ -25,6 +25,9 @@ Within Homekit you can see the actual temperature from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.0.2 (2015-09-27)
+ - (husky-koglhof) Refresh States if "Room" is refreshed.
+ 
 ### 0.0.1 (2015-09-26)
  - (husky-koglhof) Initial commit. Still non-functional.
 
