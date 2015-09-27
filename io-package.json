@@ -15,7 +15,7 @@
         ],
         "license":                  "CC BY-NC-SA",
         "singletonHost":            true,
-        "readme":                   "https://github.com/husky-koglof/ioBroker.homekit/blob/master/README.md",
+        "readme":                   "https://github.com/husky-koglhof/ioBroker.homekit/blob/master/README.md",
         "icon":                     "homekit.png",
         "extIcon":                  "https://raw.githubusercontent.com/husky-koglhof/ioBroker.homekit/master/admin/homekit.png",
         "install":                  true,

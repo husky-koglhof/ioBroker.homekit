@@ -33,7 +33,7 @@
     "preinstall": "sudo apt-get install git-core libnss-mdns libavahi-compat-libdnssd-dev -y"
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.zwave/issues"
+    "url": "https://github.com/husky-koglhof/ioBroker.homekit/issues"
   },
   "main": "main.js",
   "readmeFilename": "README.md"
