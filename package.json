@@ -1,7 +1,7 @@
 {
   "name": "ioBroker.homekit",
   "description": "Apple HomeKit based on HAP-NodeJS",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": {
     "name": "versteckt",
     "email": "husky.koglhof@icloud.com"
