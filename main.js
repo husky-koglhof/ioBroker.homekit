@@ -71,6 +71,12 @@ var temperatursensor;
 function getType(type) {
     for (var x = 0; x < temperatursensor.length; x++) {
         if (type == temperatursensor[x]) {
+            return "Thermostat";
+        }
+    }
+
+    for (var x = 0; x < temperatursensor.length; x++) {
+        if (type == temperatursensor[x]) {
             return "TemperatureSensor";
         }
     }
@@ -107,6 +113,15 @@ var mappings = {
         },
         "manufacturer": "Homematic",
         "model": "Temperature"
+    },
+    Thermostat: {
+        "service": "Thermostat",
+        "name": "",
+        "topic": {
+            "statusTemperature": ""
+        },
+        "manufacturer": "Homematic",
+        "model": "Thermostat"
     },
     Lightbulb_dimmer: {
         "service": "Lightbulb",
@@ -190,10 +205,36 @@ function main() {
                     } else {
                         map.name = localObject.common.name;
                     }
-                    if (type == "TemperatureSensor") {
+                    if (type == "TemperatureSensor" || type == "Thermostat") {
                         adapter.log.info(device + " is a TemperatureSensor");
 
                         map.topic.statusTemperature = member;
+
+                        // Todo: Remove hardcoded Homematic Types
+                        // HM-CC-TC has following Structure
+                        // DEVICE.CHANNEL 0 = LOWBAT
+                        // DEVICE.CHANNEL 1 = HUMIDITY + TEMPERATURE
+                        // DEVICE.CHANNEL 2 = SETPOINT + STATE
+
+                        // HM-CC-RT-DN has following Structure
+                        // DEVICE.CHANNEL 0 = LOWBAT
+                        // DEVICE.CHANNEL 4 = ACTUAL_TEMPERATURE + VALVE_STATE + SET_TEMPERATURE
+
+                        var actual_temperature;
+                        var setpoint;
+
+                        var obj = objects[device];
+                        if (obj.native.TYPE == "HM-CC-TC") {
+                            map.topic.actual_temperature = device + ".1.TEMPERATURE";
+                            map.topic.setpoint = device + ".2.SETPOINT";
+                            map.topic.humidity = device + ".1.HUMIDITY";
+                        } else if (obj.native.TYPE == "BC-RT-TRX-CyG-3") {
+                            map.topic.actual_temperature = device + ".1.ACTUAL_TEMPERATURE";
+                            map.topic.setpoint = device + ".1.SET_TEMPERATURE";
+                        } else if (obj.native.TYPE == "HM-CC-RT-DN") {
+                            map.topic.actual_temperature = device + ".4.ACTUAL_TEMPERATURE";
+                            map.topic.setpoint = device + ".4.SET_TEMPERATURE";
+                        }
                     } else if (type == "Lightbulb") {
                         adapter.log.info(device + " is a Lightbulb");
 
@@ -243,6 +284,24 @@ function setInfos(acc, settings) {
 }
 
 var createAccessory = {
+    /*
+     map[(new Characteristic.On).UUID] = ["switchBinary","switchMultilevel"];
+     map[(new Characteristic.Brightness).UUID] = ["switchMultilevel"];
+     map[(new Characteristic.CurrentTemperature).UUID] = ["sensorMultilevel.Temperature","thermostat"];
+     map[(new Characteristic.TargetTemperature).UUID] = ["thermostat"];
+     map[(new Characteristic.TemperatureDisplayUnits).UUID] = ["sensorMultilevel.Temperature","thermostat"]; //TODO: Always a fixed result
+     map[(new Characteristic.CurrentHeatingCoolingState).UUID] = ["thermostat"]; //TODO: Always a fixed result
+     map[(new Characteristic.TargetHeatingCoolingState).UUID] = ["thermostat"]; //TODO: Always a fixed result
+     map[(new Characteristic.CurrentDoorState).UUID] = ["sensorBinary.Door/Window","sensorBinary"];
+     map[(new Characteristic.TargetDoorState).UUID] = ["sensorBinary.Door/Window","sensorBinary"]; //TODO: Always a fixed result
+     map[(new Characteristic.ObstructionDetected).UUID] = ["sensorBinary.Door/Window","sensorBinary"]; //TODO: Always a fixed result
+     map[(new Characteristic.BatteryLevel).UUID] = ["battery.Battery"];
+     map[(new Characteristic.StatusLowBattery).UUID] = ["battery.Battery"];
+     map[(new Characteristic.ChargingState).UUID] = ["battery.Battery"]; //TODO: Always a fixed result
+     map[(new Characteristic.CurrentAmbientLightLevel).UUID] = ["sensorMultilevel.Luminiscence"];
+     */
+
+
     LockMechanism: function createAccessory_LockMechanism(settings) {
 
         var lockUUID = uuid.generate('hap-nodejs:accessories:lock:' + settings.topic.setLock);
@@ -310,6 +369,65 @@ var createAccessory = {
 
         return lock;
     },
+    Thermostat: function createAccessory_Thermostat(settings) {
+        var sensorUUID = uuid.generate('hap-nodejs:accessories:thermostat:' + settings.topic.statusTemperature);
+        var sensor = new Accessory(settings.name, sensorUUID);
+        setInfos(sensor, settings);
+
+        adapter.log.info('> iobroker subscribe ' + settings.topic.statusTemperature);
+
+        sensor.addService(Service.Thermostat)
+            .getCharacteristic(Characteristic.CurrentTemperature)
+            .on('get', function(callback) {
+                adapter.log.info('< hap ' + settings.name + ' get TemperatureSensor CurrentTemperature');
+
+                adapter.getForeignState(settings.topic.actual_temperature, function (err, state) {
+                    var value;
+                    if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = state.val;
+                    }
+                    if (callback) callback(null, value);
+                });
+            });
+
+        sensor.getService(Service.Thermostat)
+            .getCharacteristic(Characteristic.CurrentHeatingCoolingState)
+            .on('get', function(callback) {
+                if (callback) callback(null, 0); // 0 = OFF, 1 = HEAT, 2 = COOL
+            });
+
+        sensor.getService(Service.Thermostat)
+            .getCharacteristic(Characteristic.TargetTemperature)
+            .on('get', function(callback) {
+                adapter.getForeignState(settings.topic.setpoint, function (err, state) {
+                    var value;
+                    if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = state.val;
+                    }
+                    if (callback) callback(null, value);
+                });
+            });
+
+        sensor.getService(Service.Thermostat)
+            .addCharacteristic(new Characteristic.CurrentRelativeHumidity())
+            .on('get', function(callback) {
+                adapter.getForeignState(settings.topic.humidity, function (err, state) {
+                    var value;
+                    if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = state.val;
+                    }
+                    if (callback) callback(null, value);
+                });
+            });
+
+        return sensor;
+    },
     TemperatureSensor: function createAccessory_TemperatureSensor(settings) {
 
         var sensorUUID = uuid.generate('hap-nodejs:accessories:temperature-sensor:' + settings.topic.statusTemperature);
@@ -325,9 +443,13 @@ var createAccessory = {
                 adapter.log.info('< hap ' + settings.name + ' get TemperatureSensor CurrentTemperature');
 
                 adapter.getForeignState(settings.topic.statusTemperature, function (err, state) {
+                    var value;
                     if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = state.val;
                     }
-                    if (callback) callback(null, state.val);
+                    if (callback) callback(null, value);
                 });
             });
 
@@ -362,9 +484,13 @@ var createAccessory = {
                 //callback(null, on);
 
                 adapter.getForeignState(settings.topic.statusOn, function (err, state) {
+                    var value;
                     if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = state.val;
                     }
-                    if (callback) callback(null, state.val);
+                    if (callback) callback(null, value);
                 });
 
             });
