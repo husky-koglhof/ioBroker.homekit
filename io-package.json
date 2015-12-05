@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.0.3",
+        "version":                  "0.0.4",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
@@ -18,6 +18,7 @@
         "readme":                   "https://github.com/husky-koglhof/ioBroker.homekit/blob/master/README.md",
         "icon":                     "homekit.png",
         "extIcon":                  "https://raw.githubusercontent.com/husky-koglhof/ioBroker.homekit/master/admin/homekit.png",
+        "install":                  true,
         "singleton":                true,
         "messagebox":               true
     },
@@ -26,8 +27,39 @@
         "port": 51826,
         "pincode": "031-45-154",
         "category": "Accessory.Categories.OTHER",
-        "TemperatureSensor": "HM-CC-TC,HM-CC-RT-DN,BC-RT-TRX-CyG-3",
-        "Lightbulb": "HM-LC-Sw1-FM,HM-LC-Sw2-FM,HM-LC-Sw4-DR"
+        "Accessories": {
+            "Switch": {
+                "State": {
+                    "HM-LC-Sw1-FM": ".STATE",
+                    "HM-LC-Sw2-FM": ".STATE",
+                    "HM-LC-Sw2-FM": ".STATE",
+                    "HM-LC-Sw4-DR": ".STATE",
+                    "FGWPE": ""
+                }
+            },
+            "Thermostat": {
+                "CurrentHeatingCoolingState": {},
+                "TargetHeatingCoolingState": {},
+                "CurrentTemperature": {
+                    "HM-CC-TC": "1.TEMPERATURE",
+                    "BC-RT-TRX-CyG-3": "4.ACTUAL_TEMPERATURE",
+                    "HM-CC-RT-DN": "4.ACTUAL_TEMPERATURE"
+                },
+                "TargetTemperature": {
+                    "HM-CC-TC": "2.SETPOINT",
+                    "BC-RT-TRX-CyG-3": "4.SET_TEMPERATURE",
+                    "HM-CC-RT-DN": "4.SET_TEMPERATURE"
+                },
+                "TemperatureDisplayUnits": {},
+                "CurrentRelativeHumidity": {
+                    "HM-CC-TC": "1.HUMIDITY"
+                },
+                "TargetRelativeHumidity": {},
+                "CoolingThresholdTemperature": {},
+                "HeatingThresholdTemperature": {},
+                "Name": {}
+            }
+        }
     },
     "objects": [
     ],

@@ -25,6 +25,18 @@ Within Homekit you can see the actual temperature from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.0.4 (2015-12-05)
+ - (husky-koglhof) Replaced hardcoded Values for Homematic
+   Added Configuration for generic Objects.
+   Currently tested:
+   Homematic
+   HM-CC-TC, HM-CC-RT-DN (CurrentTemperature, Setpoint, Humidity)
+   HM-LC-Sw1-FM, HM-LC-Sw2-FM, HM-LC-Sw4-DR (Switch)
+   MAX
+   BC-RT-TRX-CyG-3 (CurrentTemperature, Setpoint)
+   ZWave
+   FGWPE (Switch), FGSS101 (Temperature), Danfoss Living Connect Radiator Thermostat (Temperature) 
+   
 ### 0.0.3 (2015-09-27)
  - (husky-koglhof) added Support for HM-CC-TC, HM-CC-RT-DN and BC-RT-TRX-CyG-3 Thermostat
    Supported now Actual Temperature, Set Temperature, Humidity
