@@ -75,7 +75,7 @@ function getData(callback) {
     });
 }
 
-var HAP = require('HAP-NodeJS');
+var HAP = require('hap-nodejs');
 var uuid = HAP.uuid;
 var Bridge = HAP.Bridge;
 var Accessory = HAP.Accessory;
@@ -85,8 +85,8 @@ var Characteristic = HAP.Characteristic;
 function main() {
     adapter.log.info("HAP-NodeJS starting...");
 
-    var storage = require('HAP-NodeJS/node_modules/node-persist');
-    var types = require('HAP-NodeJS/accessories/types');
+    var storage = require('hap-nodejs/node_modules/node-persist');
+    var types = require('hap-nodejs/accessories/types');
 
     // Initialize our storage system
     storage.initSync();
