@@ -1,9 +1,13 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/jquery.multiselect-1.13.css"/>
     <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
     <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jqGrid/grid.locale-all.js"></script>
 
     <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
     <script type="text/javascript" src="../../js/translate.js"></script>
@@ -19,12 +23,31 @@
     </style>
 
     <script type="text/javascript">
+        var accessories = {};
+        var devices = [];
+
         changed = false;
         systemDictionary = {
             "Suppress Refresh": {
                 "en": "Suppress Refresh",
                 "de": "Neuladen verhindern",
                 "ru": "подавить обновление"
+            },
+            "accessory": {
+                "en": "Accessory",
+                "de": "Zubehör"
+            },
+            "object": {
+                "en": "Object",
+                "de": "Objekt"
+            },
+            "parent": {
+                "en": "Parent",
+                "de": "Hersteller"
+            },
+            "state": {
+                "en:": "State",
+                "de:": "Status"
             }
         };
 
@@ -87,6 +110,69 @@
                     $('#' + key + '.value').val(settings[key]).change(onChange).keyup(onChange);
                 }
             }
+
+
+            /* ***************************************** */
+            editTable('devices', ['accessory', 'object', 'parent', 'state'], devices, 1);
+
+            accessories = settings["Accessories"] || {};
+
+
+            if (accessories !== undefined) {
+                var $grid = $('#devices');
+
+                // First get Root Object
+                var switches = accessories.Switch;
+                var thermostat = accessories.Thermostat;
+                var temperature = accessories.Temperature;
+                var humidity = accessories.Humidity;
+
+                for (var object in switches) {
+                    for (var type in switches[object]) {
+                        addToTable("devices", {
+                            accessory: "Switch",
+                            object: object,
+                            parent: type,
+                            state: switches[object][type]
+                        }, $grid, true);
+                    }
+                }
+
+                for (var object in thermostat) {
+                    for (var type in thermostat[object]) {
+                        addToTable("devices", {
+                            accessory: "Thermostat",
+                            object: object,
+                            parent: type,
+                            state: thermostat[object][type]
+                        }, $grid, true);
+                    }
+                }
+
+                for (var object in temperature) {
+                    for (var type in temperature[object]) {
+                        addToTable("devices", {
+                            accessory: "Temperature",
+                            object: object,
+                            parent: type,
+                            state: temperature[object][type]
+                        }, $grid, true);
+                    }
+                }
+
+                for (var object in humidity) {
+                    for (var type in humidity[object]) {
+                        addToTable("devices", {
+                            accessory: "Humidity",
+                            object: object,
+                            parent: type,
+                            state: humidity[object][type]
+                        }, $grid, true);
+                    }
+                }
+            }
+            /* ***************************************** */
+
             // Signal to admin, that no changes yet
             onChange(false);
         }
@@ -100,7 +186,34 @@
                 var $this = $(this);
                 obj[$this.attr('id')] = $this.val();
             });
-            callback(obj);
+
+            var json = {};
+
+            // Get edited table
+            obj.devices = getTableResult('devices', ['accessory', 'object', 'parent', 'state']);
+            var devices = {};
+            for (value in obj.devices) {
+                var o = obj.devices[value];
+                var accessory = o['accessory'];
+                var object = o['object'];
+                var parent = o['parent'];
+                var state = o['state'];
+
+                if (json[accessory] === undefined) {
+                    json[accessory] = {};
+                }
+                if (json[accessory][object] === undefined) {
+                    json[accessory][object] = {};
+                }
+                if (json[accessory][object][parent] === undefined) {
+                    json[accessory][object][parent] = state;
+                }
+            }
+            var settings = {};
+            settings['Accessories'] = json;
+
+            $('#save').button("disable");
+            callback(settings);
         }
 
     </script>
@@ -127,6 +240,10 @@
             <td><input class="value" id="port"/></td>
         </tr>
         </tbody>
+        <th>Configuration Objects</th>
+        <tr>
+            <table id="devices"></table><div id="pager-devices" style="width:1024px"></div>
+        </tr>
     </table>
 </div>
 </body></html>

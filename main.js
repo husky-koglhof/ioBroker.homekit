@@ -32,12 +32,13 @@ var adapter = utils.adapter({
 });
 
 var switches = [];
-var temperature = [];
+var thermostat = [];
 var humidity = [];
 var battery = [];
 var alarm = [];
 var setpoint = [];
 var switches = [];
+var temperature = [];
 
 function getData(callback) {
     var statesReady;
@@ -59,14 +60,15 @@ function getData(callback) {
             objects[res[i].doc._id] = res[i].doc;
             if (res[i].doc.type === 'enum') enums.push(res[i].doc._id);
             var obj = res[i].doc;
-            if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "value.humidity") humidity.push(obj._id);
-            if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "value.temperature") temperature.push(obj._id);
+            if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "sensor.humidity") humidity.push(obj._id);
+            if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "value.temperature") thermostat.push(obj._id);
             if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "indicator.battery") battery.push(obj._id);
             if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "indicator.battery") battery.push(obj._id);
             if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "value.battery") battery.push(obj._id);
             if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "alarm") alarm.push(obj._id);
             if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "level.temperature") setpoint.push(obj._id);
             if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "switch") switches.push(obj._id);
+            if (obj.common !== undefined && obj.common.role !== undefined && obj.common.role == "sensor.temperature") temperature.push(obj._id);
         }
 
         objectsReady = true;
@@ -83,7 +85,7 @@ var Service = HAP.Service;
 var Characteristic = HAP.Characteristic;
 
 function main() {
-    adapter.log.info("HAP-NodeJS starting...");
+    adapter.log.info("hap-nodejs starting...");
 
     var storage = require('hap-nodejs/node_modules/node-persist');
     var types = require('hap-nodejs/accessories/types');
@@ -121,9 +123,40 @@ function main() {
         }
     }
 
+    for (var i = 0; i < humidity.length; i++) {
+        var temp = humidity[i];
+        if (createAccessory['Humidity']) {
+            object = objects[temp];
+            accessory = accessories['Humidity'];
+            map.object = object;
+            map.accessory = accessory;
+            map.types = types;
+
+            bridge.addBridgedAccessory(createAccessory['Humidity'](map));
+        } else {
+            adapter.log.error("UNKNOWN SERVICE");
+        }
+        map = new Object();
+    }
 
     for (var i = 0; i < temperature.length; i++) {
         var temp = temperature[i];
+        if (createAccessory['Temperature']) {
+            object = objects[temp];
+            accessory = accessories['Temperature'];
+            map.object = object;
+            map.accessory = accessory;
+            map.types = types;
+
+            bridge.addBridgedAccessory(createAccessory['Temperature'](map));
+        } else {
+            adapter.log.error("UNKNOWN SERVICE");
+        }
+        map = new Object();
+    }
+
+    for (var i = 0; i < thermostat.length; i++) {
+        var temp = thermostat[i];
         if (createAccessory['Thermostat']) {
             object = objects[temp];
             accessory = accessories['Thermostat'];
@@ -157,52 +190,6 @@ function main() {
         map = new Object();
     }
 
-    /*
-     for (var obj in objects) {
-     if (obj.search("_design") == -1 && obj.search("system") == -1 && obj.search("enum") == -1 && obj.search("admin") == -1) {
-     var object = objects[obj];
-     if (object != undefined && object.native != undefined && object.native.TYPE != undefined) {
-     // Now we can check if this TYPE is supported by homekit
-     var type = object.native.TYPE;
-     if (types[type] != undefined) {
-     var c = types[type];
-     for (var acc in c) {
-     if (acc != undefined) {
-     adapter.log.info("ACC FOUND: " + acc + " for " + type);
-     var accessory = accessories[acc];
-     if (accessory.multiple !== undefined && accessory.multiple == true) {
-     // TODO: Switches can have multiple Entries
-     // TODO: Add each bridged Accessory explicit
-     var elems = accessory.State[object.native.TYPE].length;
-     for (var i = 0; i < accessory.State[object.native.TYPE].length; i++) {
-     if (createAccessory[acc]) {
-     map.object = object;
-     map.accessory = accessory;
-
-     bridge.addBridgedAccessory(createAccessory[acc](map));
-     } else {
-     adapter.log.error("UNKNOWN SERVICE");
-     }
-     map = new Object();
-     }
-     } else {
-     if (createAccessory[acc]) {
-     map.object = object;
-     map.accessory = accessory;
-
-     bridge.addBridgedAccessory(createAccessory[acc](map));
-     } else {
-     adapter.log.error("UNKNOWN SERVICE");
-     }
-     map = new Object();
-     }
-     }
-     }
-     }
-     }
-     }
-     }
-     */
     // Publish the Bridge on the local network.
     bridge.publish({
         username: adapter.config.username,
@@ -231,6 +218,158 @@ function setInfos(acc, settings) {
 }
 
 var createAccessory = {
+    Humidity: function createAccessory_Humidity(settings) {
+        var object = settings.object;
+        var accessory = settings.accessory;
+        var types = settings.types;
+
+        var s = object._id.split(".");
+        var a;
+        for (var i = 0; i < s.length-2; i++) {
+            if (a === undefined) {
+                a = s[i];
+            } else {
+                a = a + "." + s[i];
+            }
+        }
+        var p = objects[a];
+        var t;
+        if (p !== undefined && p.native.TYPE !== undefined) {
+            t = p.native.TYPE;
+        }
+        var objName;
+        if (object.common.name !== undefined && object.common.name !== "") {
+            objName = object.common.name;
+        } else {
+            objName = object._id;
+        }
+
+        var address;
+        if (object.native.ADDRESS !== undefined) {
+            address = object.native.ADDRESS;
+        } else {
+            address = object._id;
+        }
+
+        var sensorUUID = uuid.generate('hap-nodejs:accessories:humidity:' + address + "_" + objName);
+        var sensor = new Accessory(objName, sensorUUID);
+        setInfos(sensor, object.native);
+
+        adapter.log.info('> iobroker subscribe Humidity ' + address );
+
+        if (t !== undefined && accessory['CurrentRelativeHumidity'][t] !== undefined) {
+            sensor.addService(Service.HumiditySensor)
+                .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                .on('get', function (callback) {
+                    var addr = p._id + "." + accessory['CurrentRelativeHumidity'][t];
+                    adapter.log.info('< hap ' + objName + ' get CurrentRelativeHumidity for ' + addr);
+
+                    adapter.getForeignState(addr, function (err, state) {
+                        var value;
+                        if (err || !state) {
+                            value = 0;
+                        } else {
+                            value = parseFloat(state.val);
+                        }
+                        if (callback) callback(null, value);
+                    });
+                });
+        } else {
+            sensor.addService(Service.HumiditySensor)
+                .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+                .on('get', function(callback) {
+                    var addr = object._id;
+                    adapter.log.info('< hap ' + objName + ' get CurrentRelativeHumidity for ' + addr);
+
+                    adapter.getForeignState(addr, function (err, state) {
+                        var value;
+                        if (err || !state) {
+                            value = 0;
+                        } else {
+                            value = parseFloat(state.val);
+                        }
+                        if (callback) callback(null, value);
+                    });
+                });
+        }
+        return sensor;
+    },
+    Temperature: function createAccessory_Temperature(settings) {
+        var object = settings.object;
+        var accessory = settings.accessory;
+        var types = settings.types;
+
+        var s = object._id.split(".");
+        var a;
+        for (var i = 0; i < s.length-2; i++) {
+            if (a === undefined) {
+                a = s[i];
+            } else {
+                a = a + "." + s[i];
+            }
+        }
+        var p = objects[a];
+        var t;
+        if (p !== undefined && p.native.TYPE !== undefined) {
+            t = p.native.TYPE;
+        }
+        var objName;
+        if (object.common.name !== undefined && object.common.name !== "") {
+            objName = object.common.name;
+        } else {
+            objName = object._id;
+        }
+
+        var address;
+        if (object.native.ADDRESS !== undefined) {
+            address = object.native.ADDRESS;
+        } else {
+            address = object._id;
+        }
+
+        var sensorUUID = uuid.generate('hap-nodejs:accessories:temperature:' + address + "_" + objName);
+        var sensor = new Accessory(objName, sensorUUID);
+        setInfos(sensor, object.native);
+
+        adapter.log.info('> iobroker subscribe Temperature ' + address );
+
+        if (t !== undefined && accessory['CurrentTemperature'][t] !== undefined) {
+            sensor.addService(Service.TemperatureSensor)
+                .getCharacteristic(Characteristic.CurrentTemperature)
+                .on('get', function (callback) {
+                    var addr = p._id + "." + accessory['CurrentTemperature'][t];
+                    adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+
+                    adapter.getForeignState(addr, function (err, state) {
+                        var value;
+                        if (err || !state) {
+                            value = 0;
+                        } else {
+                            value = parseFloat(state.val);
+                        }
+                        if (callback) callback(null, value);
+                    });
+                });
+        } else {
+            sensor.addService(Service.TemperatureSensor)
+                .getCharacteristic(Characteristic.CurrentTemperature)
+                .on('get', function(callback) {
+                    var addr = object._id;
+                    adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+
+                    adapter.getForeignState(addr, function (err, state) {
+                        var value;
+                        if (err || !state) {
+                            value = 0;
+                        } else {
+                            value = parseFloat(state.val);
+                        }
+                        if (callback) callback(null, value);
+                    });
+                });
+        }
+        return sensor;
+    },
     Thermostat: function createAccessory_Thermostat(settings) {
 
         var object = settings.object;
@@ -253,15 +392,15 @@ var createAccessory = {
         if (p !== undefined && p.native.TYPE !== undefined) {
             t = p.native.TYPE;
         }
-        var objName;
-        if (object.common.name != undefined) {
+
+        if (object.common.name !== undefined && object.common.name !== "") {
             objName = object.common.name;
         } else {
             objName = object._id;
         }
 
         var address;
-        if (object.native.ADDRESS != undefined) {
+        if (object.native.ADDRESS !== undefined) {
             address = object.native.ADDRESS;
         } else {
             address = object._id;
@@ -309,7 +448,31 @@ var createAccessory = {
                             if (callback) callback(null, value);
                         });
                     });
+                /*
+                 sensor.getService(Service.Thermostat)
+                 .getCharacteristic(Service.CurrentHeatingCoolingState)
+                 .on('get', function (callback) {
+                 var addr = p._id + "." + accessory['State'][t];
+                 adapter.log.info('< hap ' + objName + ' get State for ' + addr);
 
+                 adapter.getForeignState(addr, function (err, state) {
+                 var value;
+                 if (err || !state) {
+                 value = 0;
+                 } else {
+                 value = state.val;
+                 }
+
+                 if (value == true) {
+                 value = 1;
+                 } else {
+                 value = 0;
+                 }
+                 if (callback) callback(null, value);
+                 });
+
+                 });
+                 */
                 sensor.getService(Service.Thermostat)
                     .getCharacteristic(Characteristic.TargetTemperature)
                     .on('set', function(value, callback) {
@@ -365,14 +528,15 @@ var createAccessory = {
         var object = settings.object;
         var accessory = settings.accessory;
         var objName;
-        if (object.common.name != undefined) {
+
+        if (object.common.name !== undefined && object.common.name !== "") {
             objName = object.common.name;
         } else {
             objName = object._id;
         }
 
         var address;
-        if (object.native.ADDRESS != undefined) {
+        if (object.native.ADDRESS !== undefined) {
             address = object.native.ADDRESS;
         } else {
             address = object._id;

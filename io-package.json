@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.0.4",
+        "version":                  "0.0.5",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
@@ -32,7 +32,6 @@
                 "State": {
                     "HM-LC-Sw1-FM": ".STATE",
                     "HM-LC-Sw2-FM": ".STATE",
-                    "HM-LC-Sw2-FM": ".STATE",
                     "HM-LC-Sw4-DR": ".STATE",
                     "FGWPE": ""
                 }
@@ -42,13 +41,16 @@
                 "TargetHeatingCoolingState": {},
                 "CurrentTemperature": {
                     "HM-CC-TC": "1.TEMPERATURE",
-                    "BC-RT-TRX-CyG-3": "4.ACTUAL_TEMPERATURE",
+                    "BC-RT-TRX-CyG-3": "1.ACTUAL_TEMPERATURE",
                     "HM-CC-RT-DN": "4.ACTUAL_TEMPERATURE"
                 },
                 "TargetTemperature": {
                     "HM-CC-TC": "2.SETPOINT",
-                    "BC-RT-TRX-CyG-3": "4.SET_TEMPERATURE",
+                    "BC-RT-TRX-CyG-3": "1.SET_TEMPERATURE",
                     "HM-CC-RT-DN": "4.SET_TEMPERATURE"
+                },
+                "State": {
+                    "HM-CC-TC": "2.STATE"
                 },
                 "TemperatureDisplayUnits": {},
                 "CurrentRelativeHumidity": {
@@ -58,6 +60,16 @@
                 "CoolingThresholdTemperature": {},
                 "HeatingThresholdTemperature": {},
                 "Name": {}
+            },
+            "Temperature": {
+                "CurrentTemperature": {
+                    "OpenWeatherMap": "TEMPERATURE"
+                }
+            },
+            "Humidity": {
+                "CurrentRelativeHumidity": {
+                    "OpenWeatherMap": "HUMIDITY"
+                }
             }
         }
     },

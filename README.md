@@ -25,6 +25,9 @@ Within Homekit you can see the actual temperature from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.0.5 (2015-12-07
+ - (husky-koglhof) Added admin Table for Devices
+ 
 ### 0.0.4 (2015-12-05)
  - (husky-koglhof) Replaced hardcoded Values for Homematic
    Added Configuration for generic Objects.
