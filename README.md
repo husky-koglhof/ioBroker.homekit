@@ -14,9 +14,11 @@ Within Admin Settings you can set following Attributes
 ![admin-settings](img/admin_settings.png)
 
 ## Installation
-For Usage you must define a enum named enum.homekit.
+- Enums are no longer needed, Objects were included cause of ioBroker roles.
+
+(For Usage you must define a enum named enum.homekit.
 There you must include all needed Objects.
-Set a common Name for all Objects e.g. hm-rpc.0.JEQ0225305.1.TEMPERATURE = Kinderzimmer
+Set a common Name for all Objects e.g. hm-rpc.0.JEQ0225305.1.TEMPERATURE = Kinderzimmer)
 
 You can use every Homekit App on iOS. These Version is tested with Elgato Eve cause it's free.
 
