@@ -94,7 +94,7 @@ function main() {
     storage.initSync();
 
     // Start by creating our Bridge which will host all loaded Accessories
-    var bridge = new Bridge('ioBroker Demo Bridge', uuid.generate("ioBroker Demo Bridge"));
+    var bridge = new Bridge('ioBroker Bridge', uuid.generate("ioBroker Bridge"));
 
     // Listen for bridge identification event
     bridge.on('identify', function (paired, callback) {
