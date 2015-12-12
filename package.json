@@ -1,7 +1,7 @@
 {
-  "name": "ioBroker.homekit",
+  "name": "iobroker.homekit",
   "description": "Apple HomeKit based on HAP-NodeJS",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": {
     "name": "versteckt",
     "email": "husky.koglhof@icloud.com"
@@ -29,9 +29,6 @@
     "darwin",
     "linux"
   ],
-  "scripts": {
-    "preinstall": "sudo apt-get install git-core libnss-mdns libavahi-compat-libdnssd-dev -y"
-  },
   "bugs": {
     "url": "https://github.com/husky-koglhof/ioBroker.homekit/issues"
   },

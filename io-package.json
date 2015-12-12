@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.0.5",
+        "version":                  "0.0.6",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
@@ -33,12 +33,12 @@
                     "HM-LC-Sw1-FM": ".STATE",
                     "HM-LC-Sw2-FM": ".STATE",
                     "HM-LC-Sw4-DR": ".STATE",
-                    "FGWPE": ""
+                    "FGWPE": "",
+                    "HM-LC-Sw1-Pl": ".STATE",
+                    "HM-LC-Sw4-PCB": ".STATE"
                 }
             },
             "Thermostat": {
-                "CurrentHeatingCoolingState": {},
-                "TargetHeatingCoolingState": {},
                 "CurrentTemperature": {
                     "HM-CC-TC": "1.TEMPERATURE",
                     "BC-RT-TRX-CyG-3": "1.ACTUAL_TEMPERATURE",
@@ -52,23 +52,20 @@
                 "State": {
                     "HM-CC-TC": "2.STATE"
                 },
-                "TemperatureDisplayUnits": {},
                 "CurrentRelativeHumidity": {
                     "HM-CC-TC": "1.HUMIDITY"
-                },
-                "TargetRelativeHumidity": {},
-                "CoolingThresholdTemperature": {},
-                "HeatingThresholdTemperature": {},
-                "Name": {}
+                }
             },
             "Temperature": {
                 "CurrentTemperature": {
-                    "OpenWeatherMap": "TEMPERATURE"
+                    "OpenWeatherMap": "1.TEMPERATURE",
+                    "HM-WDS10-TH-O": "1.TEMPERATURE"
                 }
             },
             "Humidity": {
                 "CurrentRelativeHumidity": {
-                    "OpenWeatherMap": "HUMIDITY"
+                    "OpenWeatherMap": "1.HUMIDITY",
+                    "HM-WDS10-TH-O": "1.HUMIDITY"
                 }
             }
         }

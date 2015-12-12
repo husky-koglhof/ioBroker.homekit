@@ -94,7 +94,7 @@ function main() {
     storage.initSync();
 
     // Start by creating our Bridge which will host all loaded Accessories
-    var bridge = new Bridge('ioBroker Bridge', uuid.generate("ioBroker Bridge"));
+    var bridge = new Bridge('ioBroker Demo Bridge', uuid.generate("ioBroker Demo Bridge"));
 
     // Listen for bridge identification event
     bridge.on('identify', function (paired, callback) {
@@ -334,39 +334,43 @@ var createAccessory = {
         adapter.log.info('> iobroker subscribe Temperature ' + address );
 
         if (t !== undefined && accessory['CurrentTemperature'][t] !== undefined) {
-            sensor.addService(Service.TemperatureSensor)
-                .getCharacteristic(Characteristic.CurrentTemperature)
-                .on('get', function (callback) {
-                    var addr = p._id + "." + accessory['CurrentTemperature'][t];
-                    adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+            var service = sensor.addService(Service.TemperatureSensor);
+            var char = service.getCharacteristic(Characteristic.CurrentTemperature);
+            char.setProps({minValue: -100});
 
-                    adapter.getForeignState(addr, function (err, state) {
-                        var value;
-                        if (err || !state) {
-                            value = 0;
-                        } else {
-                            value = parseFloat(state.val);
-                        }
-                        if (callback) callback(null, value);
-                    });
+            var action = char.on('get', function (callback) {
+                var addr = p._id + "." + accessory['CurrentTemperature'][t];
+                adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+
+                adapter.getForeignState(addr, function (err, state) {
+                    var value;
+                    if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = parseFloat(state.val);
+                    }
+                    if (callback) callback(null, value);
                 });
+            });
         } else {
-            sensor.addService(Service.TemperatureSensor)
-                .getCharacteristic(Characteristic.CurrentTemperature)
-                .on('get', function(callback) {
-                    var addr = object._id;
-                    adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+            var service = sensor.addService(Service.TemperatureSensor);
+            var char = service.getCharacteristic(Characteristic.CurrentTemperature);
+            char.setProps({minValue: -100});
 
-                    adapter.getForeignState(addr, function (err, state) {
-                        var value;
-                        if (err || !state) {
-                            value = 0;
-                        } else {
-                            value = parseFloat(state.val);
-                        }
-                        if (callback) callback(null, value);
-                    });
+            var action = char.on('get', function (callback) {
+                var addr = object._id;
+                adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+
+                adapter.getForeignState(addr, function (err, state) {
+                    var value;
+                    if (err || !state) {
+                        value = 0;
+                    } else {
+                        value = parseFloat(state.val);
+                    }
+                    if (callback) callback(null, value);
                 });
+            });
         }
         return sensor;
     },
@@ -411,6 +415,9 @@ var createAccessory = {
         setInfos(sensor, object.native);
 
         adapter.log.info('> iobroker subscribe Thermostat ' + address );
+
+        var addr = p._id + "." + accessory['CurrentTemperature'][t];
+        adapter.log.info('< hap ' + objName + ' get CurrentTemperature for ' + addr);
 
         if (t !== undefined) {
             if (accessory['CurrentTemperature'][t] !== undefined) {
