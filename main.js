@@ -89,12 +89,13 @@ function main() {
 
     var storage = require('hap-nodejs/node_modules/node-persist');
     var types = require('hap-nodejs/accessories/types');
+    var bridgename = adapter.config.bridgename;
 
     // Initialize our storage system
     storage.initSync();
 
     // Start by creating our Bridge which will host all loaded Accessories
-    var bridge = new Bridge('ioBroker Bridge', uuid.generate("ioBroker Bridge"));
+    var bridge = new Bridge(bridgename, uuid.generate(bridgename));
 
     // Listen for bridge identification event
     bridge.on('identify', function (paired, callback) {
@@ -197,6 +198,12 @@ function main() {
         pincode: adapter.config.pincode,
         category: adapter.config.category
     });
+
+    adapter.log.info("Bridge '" + bridgename + "' successfully published");
+    adapter.log.debug("UserName: " + adapter.config.username);
+    adapter.log.debug("PinCode:  " + adapter.config.pincode);
+    adapter.log.debug("Port:     " + adapter.config.port);
+    adapter.log.debug("Category: " + adapter.config.category);
 }
 
 function identify(settings, paired, callback) {

@@ -27,6 +27,9 @@ Within Homekit you can see the actual temperature from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.0.7 (2015-12-13)
+ - (husky-koglhof) Fixed saving admin Settings
+ 
 ### 0.0.6 (2015-12-12)
  - (husky-koglhof) Added new Devices
    Temperature can now be a negative Value (Needed for Outdoor Temperature)

@@ -211,6 +211,10 @@
             }
             var settings = {};
             settings['Accessories'] = json;
+            settings['username'] = obj.username;
+            settings['pincode'] = obj.pincode;
+            settings['port'] = obj.port;
+            settings['bridgename'] = obj.bridgename;
 
             $('#save').button("disable");
             callback(settings);
@@ -227,6 +231,10 @@
 
     <table>
         <tbody>
+        <tr>
+            <td class="translate">Bridge Name:</td>
+            <td><input class="value" id="bridgename"/></td>
+        </tr>
         <tr>
             <td class="translate">Username:</td>
             <td><input class="value" id="username"/></td>

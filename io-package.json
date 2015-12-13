@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.0.6",
+        "version":                  "0.0.7",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
@@ -27,6 +27,7 @@
         "port": 51826,
         "pincode": "031-45-154",
         "category": "Accessory.Categories.OTHER",
+        "bridgename": "ioBroker Bridge",
         "Accessories": {
             "Switch": {
                 "State": {
