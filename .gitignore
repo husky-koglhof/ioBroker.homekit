@@ -2,3 +2,4 @@ node_modules
 config
 www/_socket
 .idea
+npm-debug.log

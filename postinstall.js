@@ -36,7 +36,10 @@ var mkdirSync = function (path) {
 }
 
 walk(dir, function(err, results) {
-    if (err) throw err;
+    if (err) {
+        //console.log(err);
+        return;
+    }
 
     mkdirSync( store );
 
