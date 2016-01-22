@@ -1,7 +1,7 @@
 {
   "name": "iobroker.homekit",
   "description": "Apple HomeKit based on HAP-NodeJS",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": {
     "name": "versteckt",
     "email": "husky.koglhof@icloud.com"
@@ -14,12 +14,15 @@
     "Siri",
     "home automation"
   ],
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/husky-koglhof/ioBroker.homekit"
   },
   "dependencies": {
-    "hap-nodejs": "^0.0.7",
+    "hap-nodejs": "^0.1.1",
     "yalm": "^2.0.0",
     "yargs": "^3.25.0"
   },
