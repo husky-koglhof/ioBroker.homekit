@@ -1,7 +1,7 @@
 {
   "name": "iobroker.homekit",
   "description": "Apple HomeKit based on HAP-NodeJS",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "author": {
     "name": "versteckt",
     "email": "husky.koglhof@icloud.com"
@@ -14,17 +14,19 @@
     "Siri",
     "home automation"
   ],
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/husky-koglhof/ioBroker.homekit"
+    "url": "git+https://github.com/husky-koglhof/ioBroker.homekit.git"
   },
   "dependencies": {
-    "hap-nodejs": "^0.0.7",
+    "hap-nodejs": "^0.1.1",
     "yalm": "^2.0.0",
     "yargs": "^3.25.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "os": [
     "darwin",
     "linux"
@@ -33,5 +35,26 @@
     "url": "https://github.com/husky-koglhof/ioBroker.homekit/issues"
   },
   "main": "main.js",
-  "readmeFilename": "README.md"
+  "gitHead": "e93dd2c488fed151920369a1998e0343fd1d9042",
+  "_id": "iobroker.homekit@0.0.9",
+  "_shasum": "3123fb5a594f5ec6e8d90cda7aa82ea5dda6ac3a",
+  "_from": "iobroker.homekit@*",
+  "_npmVersion": "2.11.3",
+  "_nodeVersion": "0.12.7",
+  "_npmUser": {
+    "name": "versteckt",
+    "email": "husky.koglhof@icloud.com"
+  },
+  "dist": {
+    "shasum": "3123fb5a594f5ec6e8d90cda7aa82ea5dda6ac3a",
+    "tarball": "http://registry.npmjs.org/iobroker.homekit/-/iobroker.homekit-0.0.9.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "versteckt",
+      "email": "husky.koglhof@icloud.com"
+    }
+  ],
+  "directories": {},
+  "_resolved": "http://registry.npmjs.org/iobroker.homekit/-/iobroker.homekit-0.0.9.tgz"
 }

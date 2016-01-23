@@ -27,6 +27,14 @@ Within Homekit you can see the actual temperature from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.0.10 (2016-01-23)
+ - (husky-koglhof) changed Store to correct path
+ 
+### 0.0.8 (2016-01-22)
+ - (husky-koglhof) Moved persisten Store to iobroker-data/homekit.0
+   removed sensor.* Types
+   added WeatherUnderGround Feature (forecast Objects are disabled)
+   
 ### 0.0.7 (2015-12-13)
  - (husky-koglhof) Fixed saving admin Settings
  

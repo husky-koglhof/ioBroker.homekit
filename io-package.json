@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.0.7",
+        "version":                  "0.0.10",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
@@ -42,7 +42,9 @@
                 "CurrentTemperature": {
                     "HM-CC-TC": "1.TEMPERATURE",
                     "BC-RT-TRX-CyG-3": "1.ACTUAL_TEMPERATURE",
-                    "HM-CC-RT-DN": "4.ACTUAL_TEMPERATURE"
+                    "HM-CC-RT-DN": "4.ACTUAL_TEMPERATURE",
+                    "OpenWeatherMap": "1.TEMPERATURE",
+                    "HM-WDS10-TH-O": "1.TEMPERATURE"
                 },
                 "TargetTemperature": {
                     "HM-CC-TC": "2.SETPOINT",
@@ -53,7 +55,9 @@
                     "HM-CC-TC": "2.STATE"
                 },
                 "CurrentRelativeHumidity": {
-                    "HM-CC-TC": "1.HUMIDITY"
+                    "HM-CC-TC": "1.HUMIDITY",
+                    "OpenWeatherMap": "1.HUMIDITY",
+                    "HM-WDS10-TH-O": "1.HUMIDITY"
                 }
             },
             "Temperature": {
