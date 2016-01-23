@@ -696,5 +696,3 @@ var createAccessory = {
         return sensor;
     }
 };
-
-
