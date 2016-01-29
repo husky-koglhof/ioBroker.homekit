@@ -10,6 +10,7 @@ Within Admin Settings you can set following Attributes
 - username
 - port
 - pincode
+- bridge name
 
 ![admin-settings](img/admin_settings.png)
 
@@ -22,16 +23,39 @@ Set a common Name for all Objects e.g. hm-rpc.0.JEQ0225305.1.TEMPERATURE = Kinde
 
 You can use every Homekit App on iOS. These Version is tested with Elgato Eve cause it's free.
 
-Currently implemented are: Homematic Thermostat and Homematic Switch.
-Within Homekit you can see the actual temperature from the Thermostat.
+Currently implemented are: 
+ - Homematic Thermostat
+ - Homematic Switch
+ - zWave Temperature
+ - zWave Switch
+ 
+Supported Roles from ioBroker:
+ - value.temperature
+ - indicator.battery (Not tested)
+ - value.battery (Not tested)
+ - alarm (Not tested)
+ - level.temperature
+ - switch
+ - value.humidity
+ 
+If iobroker.weatherground is used, forecast Objects are explicit removed from homekit.
+ 
+Within Homekit you can see the actual temperature and humidity from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.1.0 (2016-01-29)
+ - (husky-koglhof) 
+   fixed: timeout of homekit protocol
+   fixed: zwave states change loop
+   added: States are updated automatically in iOS
+   added: zWave Objects
+
 ### 0.0.10 (2016-01-23)
  - (husky-koglhof) changed Store to correct path
  
 ### 0.0.8 (2016-01-22)
- - (husky-koglhof) Moved persisten Store to iobroker-data/homekit.0
+ - (husky-koglhof) Moved persistent Store to iobroker-data/homekit.0
    removed sensor.* Types
    added WeatherUnderGround Feature (forecast Objects are disabled)
    

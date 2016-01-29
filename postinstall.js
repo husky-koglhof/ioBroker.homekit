@@ -24,7 +24,7 @@ var walk = function(dir, done) {
 };
 
 // Check if already persisent store exists. If so, move it to the correct path
-var dir = "/root/persist";
+var dir = "/persist";
 var store = __dirname + "/../../iobroker-data/homekit.0";
 
 var mkdirSync = function (path) {

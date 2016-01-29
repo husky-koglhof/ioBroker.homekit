@@ -3,3 +3,4 @@ config
 www/_socket
 .idea
 npm-debug.log
+persist
