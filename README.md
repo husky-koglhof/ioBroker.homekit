@@ -37,6 +37,7 @@ Supported Roles from ioBroker:
  - level.temperature
  - switch
  - value.humidity
+ - level.dimmer
  
 If iobroker.weatherground is used, forecast Objects are explicit removed from homekit.
  
@@ -44,6 +45,11 @@ Within Homekit you can see the actual temperature and humidity from the Thermost
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.1.1 (2016-01-31)
+ - (husky-koglhof)
+   fixed: Error when weatherground Adapter not found
+   added: Role level.dimmer (Switch and Brightness)
+   
 ### 0.1.0 (2016-01-29)
  - (husky-koglhof) 
    fixed: timeout of homekit protocol

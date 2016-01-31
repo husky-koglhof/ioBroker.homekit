@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.1.0",
+        "version":                  "0.1.1",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
@@ -31,6 +31,16 @@
             "Switch": {
                 "State": {
                     "HM-LC-Sw1-FM": ".STATE",
+                    "HM-LC-Sw2-FM": ".STATE",
+                    "HM-LC-Sw4-DR": ".STATE",
+                    "FGWPE": "",
+                    "HM-LC-Sw1-Pl": ".STATE",
+                    "HM-LC-Sw4-PCB": ".STATE"
+                }
+            },
+            "Dimmer": {
+                "State": {
+                    "HM-LC-Dim1PWM-CV": ".STATE",
                     "HM-LC-Sw2-FM": ".STATE",
                     "HM-LC-Sw4-DR": ".STATE",
                     "FGWPE": "",

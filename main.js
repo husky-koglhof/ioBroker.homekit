@@ -20,14 +20,14 @@ var adapter = utils.adapter({
         });
     },
     objectChange: function (id, obj) {
-        adapter.log.debug("objectChange for " + id + " found");
+        // adapter.log.debug("objectChange for " + id + " found");
     },
     stateChange: function (id, state) {
-        adapter.log.debug("stateChange for " + id + ", state: " + JSON.stringify(state));
+        // adapter.log.debug("stateChange for " + id + ", state: " + JSON.stringify(state));
         states[id] = state;
 
         var address = createAddress(objects[id]);
-        adapter.log.debug("ADDRESS = " + address);
+        //adapter.log.debug("ADDRESS = " + address);
         var sensorObject = allSensors[address];
         var value = state.val;
 
@@ -55,6 +55,18 @@ var adapter = utils.adapter({
                 } else if (o == 1) {
                     oldValue = true;
                 }
+            } else if (sensorObject[0] == 'Service.Lightbulb') {
+                adapter.log.debug("is Lightbulb = true");
+                var i = parseInt(value);
+                if (sensorObject[1] == 'Characteristic.Brightness') {
+                    adapter.log.debug("brightness");
+                } else {
+                    if (i == 0) {
+                        value = false;
+                    } else if (i > 0) {
+                        value = true;
+                    }
+                }
             } else {
                 // If value has decimal, convert to Float
                 if (value !== true && value !== false && value !== "true" && value !== "false") {
@@ -76,7 +88,37 @@ var adapter = utils.adapter({
                     sensor
                         .getService(service)
                         .setCharacteristic(characteristic, value);
+
+                    if (sensorObject[1] == 'Characteristic.Brightness') {
+                        if (value == 0) {
+                            sensor
+                                .getService(service)
+                                .setCharacteristic(Characteristic.On, false);
+                        } else if (value > 0 ) {
+                            sensor
+                                .getService(service)
+                                .setCharacteristic(Characteristic.On, true);
+                        }
+                    }
                 }
+            } else if (sensorObject[1] == 'Characteristic.Brightness') {
+                if (value !== NaN && value !== null && value !== "NaN") {
+                    adapter.log.info("4. Change state for " + address + " to " + value + " ack = " + state.ack);
+
+                    sensor
+                        .getService(service)
+                        .setCharacteristic(characteristic, value);
+                    if (value == 0) {
+                        sensor
+                            .getService(service)
+                            .setCharacteristic(Characteristic.On, false);
+                    } else if (value > 0 ) {
+                        sensor
+                            .getService(service)
+                            .setCharacteristic(Characteristic.On, true);
+                    }
+                }
+
             }
         }
     },
@@ -92,6 +134,7 @@ var alarm = [];
 var setpoint = [];
 var switches = [];
 var temperature = [];
+var lightbulb = [];
 
 function getParent(address) {
     var a = address.split('.');
@@ -133,7 +176,7 @@ function getData(callback) {
             if (res[i].doc.type === 'enum') enums.push(res[i].doc._id);
             var obj = res[i].doc;
             // TODO: Remove hardcoded WeatherUnderGround
-            if (obj._id.search("forecast") < 0) {
+            if (obj._id != undefined && obj._id.search("forecast") < 0) {
                 if (obj.common !== undefined && obj.common.role == "value.humidity") {
                     var parent = getParent(obj._id);
                     var pobj = objects[parent];
@@ -147,6 +190,7 @@ function getData(callback) {
                 if (obj.common !== undefined && obj.common.role == "alarm") alarm.push(obj._id);
                 if (obj.common !== undefined && obj.common.role == "level.temperature") setpoint.push(obj._id);
                 if (obj.common !== undefined && obj.common.role == "switch") switches.push(obj._id);
+                if (obj.common !== undefined && obj.common.role == "level.dimmer") lightbulb.push(obj._id);
             }
         }
 
@@ -285,6 +329,36 @@ function main() {
         map = new Object();
     }
 
+    for (var i = 0; i < lightbulb.length; i++) {
+        var di  = lightbulb[i];
+
+        object = objects[di];
+        // Homematic Switches have PARENT_TYPE e.g. HM-LC-Sw2-FM
+        if (object.native.PARENT_TYPE != undefined) {
+            if (createAccessory['Lightbulb']) {
+                accessory = accessories['Lightbulb'];
+                map.object = object;
+                map.accessory = accessory;
+
+                bridge.addBridgedAccessory(createAccessory['Lightbulb'](map));
+            } else {
+                adapter.log.error("UNKNOWN SERVICE");
+            }
+        }
+        if (object.common.type == "number") {
+            if (createAccessory['Lightbulb']) {
+                accessory = accessories['Lightbulb'];
+                map.object = object;
+                map.accessory = accessory;
+
+                bridge.addBridgedAccessory(createAccessory['Lightbulb'](map));
+            } else {
+                adapter.log.error("UNKNOWN SERVICE");
+            }
+        }
+        map = new Object();
+
+    }
     // Publish the Bridge on the local network.
     bridge.publish({
         username: adapter.config.username,
@@ -637,6 +711,105 @@ var createAccessory = {
         }
         adapter.log.debug("ADDRESS FOR SWITCH = " + addr);
         allSensors[addr] = ['Service.Switch', 'Characteristic.On', sensor];
+        return sensor;
+    },
+    Lightbulb: function createAccessory_Lightbulb(settings) {
+
+        var object = settings.object;
+        var accessory = settings.accessory;
+
+        var objName = createName(object);
+        var address = createAddress(object);
+
+        var sensorUUID = uuid.generate('hap-nodejs:accessories:lightbulb:' + address + "_" + objName);
+        var sensor = new Accessory(objName, sensorUUID);
+        setInfos(sensor, object.native);
+
+        adapter.log.debug('> iobroker subscribe LightBulb ' + address );
+
+        sensor.addService(Service.Lightbulb)
+            .getCharacteristic(Characteristic.On)
+            .on('get', function (callback) {
+                var addr;
+                // Homematic Switches have PARENT_TYPE e.g. HM-LC-Sw2-FM
+                if (object.native.PARENT_TYPE != undefined) {
+                    addr = object._id + accessory['State'][object.native.PARENT_TYPE];
+                } else {
+                    addr = object._id;
+                }
+                adapter.log.debug('< hap ' + objName + ' get Lightbulb(on) for ' + addr);
+
+                value = states[addr].val;
+                if (callback) callback(null, value);
+            });
+
+        sensor.getService(Service.Lightbulb)
+            .getCharacteristic(Characteristic.On)
+            .on('change', function(values) {
+                var addr;
+                // Homematic Switches have PARENT_TYPE e.g. HM-LC-Sw2-FM
+                if (object.native.PARENT_TYPE != undefined) {
+                    addr = object._id + accessory['State'][object.native.PARENT_TYPE];
+                } else {
+                    addr = object._id;
+                }
+                var value;
+
+                // Bugfix: Homematic Dimmer comes with State true / false, convert to 100 / 0
+                var i = eval(values.newValue);
+                if (i === true) {
+                    value = 100;
+                } else if (i === false) {
+                    value = 0;
+                } else {
+                    value = values.newValue;
+                }
+
+                adapter.log.debug("CHANGED: " + addr + " = " + value);
+                if (values.context !== undefined) {
+                    adapter.log.info("CHANGED: " + addr + " = " + value);
+                    adapter.setForeignState(addr, {val: value, ack: false});
+                }
+            });
+
+        sensor.getService(Service.Lightbulb)
+            .getCharacteristic(Characteristic.Brightness)
+            .on('get', function(callback) {
+                var addr;
+                // Homematic Switches have PARENT_TYPE e.g. HM-LC-Sw2-FM
+                if (object.native.PARENT_TYPE != undefined) {
+                    addr = object._id + accessory['State'][object.native.PARENT_TYPE];
+                } else {
+                    addr = object._id;
+                }
+                adapter.log.debug('< hap ' + objName + ' get Lightbulb(brightness) for ' + addr);
+
+                value = states[addr].val;
+                if (callback) callback(null, value);
+            });
+
+        sensor.getService(Service.Lightbulb)
+            .getCharacteristic(Characteristic.Brightness)
+            .on('change', function(values) {
+                adapter.log.debug(JSON.stringify(values));
+
+                var value;
+                value = values.newValue;
+
+                if (values.context !== undefined) {
+                    adapter.setForeignState(addr, {val: value, ack: false});
+                }
+            });
+
+        var addr;
+        // Homematic Switches have PARENT_TYPE e.g. HM-LC-Sw2-FM
+        if (object.native.PARENT_TYPE != undefined) {
+            addr = object._id + accessory['State'][object.native.PARENT_TYPE];
+        } else {
+            addr = object._id;
+        }
+        adapter.log.debug("ADDRESS FOR LIGHTBULB = " + addr);
+        allSensors[addr] = ['Service.Lightbulb', 'Characteristic.Brightness', sensor];
         return sensor;
     }
 };
