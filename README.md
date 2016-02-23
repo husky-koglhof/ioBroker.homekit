@@ -33,18 +33,23 @@ Supported Roles from ioBroker:
  - value.temperature
  - indicator.battery (Not tested)
  - value.battery (Not tested)
- - alarm (Not tested)
+ - alarm
  - level.temperature
  - switch
  - value.humidity
  - level.dimmer
- 
+
 If iobroker.weatherground is used, forecast Objects are explicit removed from homekit.
  
 Within Homekit you can see the actual temperature and humidity from the Thermostat.
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.1.2 (2016-02-23)
+ - (husky-koglhof)
+   Added Dependency hap-nodejs 0.2.4 (No longer Reload / Timeout Failure available)
+   Tested alarm role (With zwave Adapter)
+   
 ### 0.1.1 (2016-01-31)
  - (husky-koglhof)
    fixed: Error when weatherground Adapter not found

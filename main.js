@@ -83,8 +83,8 @@ var adapter = utils.adapter({
                 adapter.log.debug("2. Change state for " + address + " to " + value + " ack = " + state.ack);
 
                 if (value !== NaN && value !== null && value !== "NaN") {
-                    adapter.log.info("3. Change state for " + address + " to " + value + " ack = " + state.ack);
-
+                    adapter.log.debug("3. Change state for " + address + " to " + value + " ack = " + state.ack);
+/*
                     sensor
                         .getService(service)
                         .setCharacteristic(characteristic, value);
@@ -100,10 +100,11 @@ var adapter = utils.adapter({
                                 .setCharacteristic(Characteristic.On, true);
                         }
                     }
+*/
                 }
             } else if (sensorObject[1] == 'Characteristic.Brightness') {
                 if (value !== NaN && value !== null && value !== "NaN") {
-                    adapter.log.info("4. Change state for " + address + " to " + value + " ack = " + state.ack);
+                    adapter.log.debug("4. Change state for " + address + " to " + value + " ack = " + state.ack);
 
                     sensor
                         .getService(service)
@@ -251,6 +252,22 @@ function main() {
         }
     }
 
+    for (var i = 0; i < alarm.length; i++) {
+        var temp = alarm[i];
+        if (createAccessory['SecuritySystem']) {
+            object = objects[temp];
+            accessory = accessories['SecuritySystem'];
+            map.object = object;
+            map.accessory = accessory;
+            map.types = types;
+
+            bridge.addBridgedAccessory(createAccessory['SecuritySystem'](map));
+        } else {
+            adapter.log.error("UNKNOWN SERVICE");
+        }
+        map = new Object();
+    }
+
     for (var i = 0; i < humidity.length; i++) {
         var temp = humidity[i];
         if (createAccessory['Humidity']) {
@@ -395,6 +412,72 @@ function setInfos(acc, settings) {
 var allSensors = {};
 
 var createAccessory = {
+    SecuritySystem: function createAccessory_SecuritySystem(settings) {
+        var object = settings.object;
+        var accessory = settings.accessory;
+        var types = settings.types;
+
+        var s = object._id.split(".");
+        var a;
+        for (var i = 0; i < s.length-2; i++) {
+            if (a === undefined) {
+                a = s[i];
+            } else {
+                a = a + "." + s[i];
+            }
+        }
+        var p = objects[a];
+        var t;
+        if (p !== undefined && p.native.TYPE !== undefined) {
+            t = p.native.TYPE;
+        }
+        var objName = createName(object);
+        var address = createAddress(object);
+
+        var sensorUUID = uuid.generate('hap-nodejs:accessories:securitysystem:' + address + "_" + objName);
+        var sensor = new Accessory(objName, sensorUUID);
+        setInfos(sensor, object.native);
+
+        adapter.log.debug('> iobroker subscribe SecuritySystem ' + address );
+
+        if (t !== undefined && accessory['SecuritySystem'][t] !== undefined) {
+            sensor.addService(Service.SecuritySystem)
+                .getCharacteristic(Characteristic.SecuritySystemCurrentState)
+                .on('get', function (callback) {
+                    var addr = p._id + "." + accessory['SecuritySystemCurrentState'][t];
+                    adapter.log.debug('< hap ' + objName + ' get SecuritySystemCurrentState for ' + addr);
+
+                    if (states[addr] != undefined && states[addr].val > 0) {
+                        value = Characteristic.SecuritySystemCurrentState.ALARM_TRIGGERED;
+                    } else {
+                        value = Characteristic.SecuritySystemCurrentState.STAY_ARM;
+                    }
+                    //value = states[addr].val;
+                    //adapter.subscribeForeignStates(addr);
+                    if (callback) callback(null, value);
+                });
+            var addr = p._id + "." + accessory['SecuritySystemCurrentState'][t];
+        } else {
+            sensor.addService(Service.SecuritySystem)
+                .getCharacteristic(Characteristic.SecuritySystemCurrentState)
+                .on('get', function(callback) {
+                    var addr = object._id;
+                    adapter.log.debug('< hap ' + objName + ' get SecuritySystemCurrentState for ' + addr);
+
+                    if (states[addr] != undefined && states[addr].val > 0) {
+                        value = Characteristic.SecuritySystemCurrentState.ALARM_TRIGGERED;
+                    } else {
+                        value = Characteristic.SecuritySystemCurrentState.STAY_ARM;
+                    }
+                    //value = parseFloat(states[addr].val);
+                    //adapter.subscribeForeignStates(addr);
+                    if (callback) callback(null, value);
+                });
+            var addr = object._id;
+        }
+        allSensors[addr] = ['Service.SecuritySystem', 'Characteristic.SecuritySystemCurrentState', sensor];
+        return sensor;
+    },
     Humidity: function createAccessory_Humidity(settings) {
         var object = settings.object;
         var accessory = settings.accessory;
@@ -530,7 +613,8 @@ var createAccessory = {
         }
         var p = objects[a];
         var t;
-        if (p !== undefined && p.native.TYPE !== undefined) {
+        // WORKAROUND: UVR61-3 Devices are generated with Type UVR61-3
+        if (p !== undefined && p.native.TYPE !== undefined && p.native.TYPE !== "UVR61-3") {
             t = p.native.TYPE;
         }
 
@@ -552,7 +636,13 @@ var createAccessory = {
                     sensor.addService(Service.Thermostat)
                         .getCharacteristic(Characteristic.CurrentTemperature)
                         .on('get', function (callback) {
-                            var addr = p._id + "." + accessory['CurrentTemperature'][t];
+                            // BUGFIX: If there are multiple Objects, use settings.object._id as correct address
+                            var addr;
+                            if (accessory['CurrentTemperature'][t] == "*") {
+                                addr = settings.object._id;
+                            } else {
+                                addr = p._id + "." + accessory['CurrentTemperature'][t];
+                            }
                             adapter.log.debug('< hap ' + objName + ' get CurrentTemperature for ' + addr);
 
                             value = parseFloat(states[addr].val);
@@ -767,7 +857,7 @@ var createAccessory = {
 
                 adapter.log.debug("CHANGED: " + addr + " = " + value);
                 if (values.context !== undefined) {
-                    adapter.log.info("CHANGED: " + addr + " = " + value);
+                    adapter.log.debug("CHANGED: " + addr + " = " + value);
                     adapter.setForeignState(addr, {val: value, ack: false});
                 }
             });
