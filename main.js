@@ -29,9 +29,9 @@ var adapter = utils.adapter({
         var address = createAddress(objects[id]);
         //adapter.log.debug("ADDRESS = " + address);
         var sensorObject = allSensors[address];
-        var value = state.val;
 
-        if (sensorObject != undefined) {
+        if (sensorObject != undefined && state.val != undefined) {
+            var value = state.val;
             adapter.log.debug("   VALUE: " + value + " id = " + id);
             var service = eval(sensorObject[0]);
             var characteristic = eval(sensorObject[1]);

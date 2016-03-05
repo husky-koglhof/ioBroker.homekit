@@ -45,6 +45,10 @@ Within Homekit you can see the actual temperature and humidity from the Thermost
 The Switch can be used within Homekit.
 
 ## Changelog
+### 0.1.4 (2016-03-05)
+ - (husky-koglhof)
+   Fixed Exception (error: TypeError: Cannot read property 'val' of null)
+   
 ### 0.1.3 (2016-03-05)
  - (husky-koglhof)
    Fixed Exception (error exception: Cannot read property 'CurrentTemperature' of undefined)
