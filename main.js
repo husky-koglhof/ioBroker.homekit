@@ -430,6 +430,7 @@ var createAccessory = {
         var t;
         if (p !== undefined && p.native.TYPE !== undefined) {
             t = p.native.TYPE;
+            adapter.log.debug("< hap Type for SecuritySystem = " + t);
         }
         var objName = createName(object);
         var address = createAddress(object);
@@ -496,6 +497,7 @@ var createAccessory = {
         var t;
         if (p !== undefined && p.native.TYPE !== undefined) {
             t = p.native.TYPE;
+            adapter.log.debug("< hap Type for Humidity = " + t);
         }
         var objName = createName(object);
         var address = createAddress(object);
@@ -552,6 +554,7 @@ var createAccessory = {
         var t;
         if (p !== undefined && p.native.TYPE !== undefined) {
             t = p.native.TYPE;
+            adapter.log.debug("< hap Type for Temperature = " + t);
         }
         var objName = createName(object);
         var address = createAddress(object);
@@ -616,6 +619,7 @@ var createAccessory = {
         // WORKAROUND: UVR61-3 Devices are generated with Type UVR61-3
         if (p !== undefined && p.native.TYPE !== undefined && p.native.TYPE !== "UVR61-3") {
             t = p.native.TYPE;
+            adapter.log.debug("< hap Type for Thermostat = " + t);
         }
 
         var objName = createName(object);
@@ -628,8 +632,8 @@ var createAccessory = {
         adapter.log.debug('> iobroker subscribe Thermostat ' + address );
 
         if (p != undefined && p._id != undefined) {
-            var addr = p._id + "." + accessory['CurrentTemperature'][t];
-            adapter.log.debug('< hap ' + objName + ' get CurrentTemperature for ' + addr);
+            // var addr = p._id + "." + accessory['CurrentTemperature'][t];
+            // adapter.log.debug('< hap ' + objName + ' get CurrentTemperature for ' + addr);
 
             if (t !== undefined) {
                 if (accessory['CurrentTemperature'][t] !== undefined) {

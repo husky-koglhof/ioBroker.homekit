@@ -3,7 +3,7 @@
         "name":                     "homekit",
         "title":                    "homekit",
         "desc":                     "Apple HomeKit based on HAP-NodeJS",
-        "version":                  "0.1.2",
+        "version":                  "0.1.3",
         "mode":                     "daemon",
         "platform":                 "javascript/Node.js",
         "os":                       ["darwin", "linux"],
